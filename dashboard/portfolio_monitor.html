@@ -194,17 +194,36 @@ function tickClock(){
 }
 tickClock(); setInterval(tickClock, 30000);
 
+const hasClaudeStorage = (typeof window.storage !== 'undefined') && (window.storage !== null);
+
+async function rawGet(key){
+  if(hasClaudeStorage){
+    try{ const r = await window.storage.get(key, false); return r ? r.value : null; }catch(e){ return null; }
+  } else {
+    try{ return localStorage.getItem(key); }catch(e){ return null; }
+  }
+}
+async function rawSet(key, value){
+  if(hasClaudeStorage){
+    try{ await window.storage.set(key, value, false); }catch(e){}
+  } else {
+    try{ localStorage.setItem(key, value); }catch(e){}
+  }
+}
+
 async function getCachedUrl(){
-  try{ const r = await window.storage.get('source_url', false); return r ? JSON.parse(r.value) : null; }catch(e){ return null; }
+  const v = await rawGet('source_url');
+  return v ? JSON.parse(v) : null;
 }
 async function setCachedUrl(url){
-  try{ await window.storage.set('source_url', JSON.stringify(url), false); }catch(e){}
+  await rawSet('source_url', JSON.stringify(url));
 }
 async function getCachedData(){
-  try{ const r = await window.storage.get('cached_portfolio', false); return r ? JSON.parse(r.value) : null; }catch(e){ return null; }
+  const v = await rawGet('cached_portfolio');
+  return v ? JSON.parse(v) : null;
 }
 async function setCachedData(data){
-  try{ await window.storage.set('cached_portfolio', JSON.stringify(data), false); }catch(e){}
+  await rawSet('cached_portfolio', JSON.stringify(data));
 }
 
 function setSync(state, text, src){
