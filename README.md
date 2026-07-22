@@ -29,15 +29,15 @@ biotech-research/
         └── source_materials/          <- original documents that informed the analysis (see below)
 ```
 
-## First tasks for this session
+## First tasks for this session — DONE, see below for resolution
 
-1. Initialize git if not already done, commit everything as-is, push to the user's GitHub repo.
-2. Confirm the repo is set to **public** (`portfolio_monitor.html` needs to fetch `portfolio.json`
-   from `raw.githubusercontent.com` without auth — private repos won't work for that).
-3. Open `dashboard/portfolio_monitor.html` in a browser and sanity-check it renders and that the
-   "Configure source" flow works pointed at this repo's raw URL once pushed.
-4. Ask the user whether they want future updates (new companies, refreshed valuations) done via
-   direct commits or via PRs for review before merging — this wasn't settled in the original chat.
+1. ~~Initialize git if not already done, commit everything as-is, push to the user's GitHub repo.~~
+2. ~~Confirm the repo is set to **public**~~ — confirmed public via `gh`/GitHub API.
+3. ~~Open `dashboard/portfolio_monitor.html` in a browser and sanity-check~~ — confirmed working
+   live against `raw.githubusercontent.com/kuda4910/biotech-research/main/portfolio.json` in a
+   real browser (see fix below).
+4. ~~Ask the user whether they want future updates via direct commits or PRs~~ — settled: **direct
+   commits to main**, no PR review step.
 
 ## SPRB (Spruce Biosciences) — full working context
 
@@ -153,13 +153,15 @@ a Claude Code session) with the ticker filled in. It specifies the same model st
 structure, sell-side reconciliation, and — importantly — a standing instruction to flag every
 assumption's source, verify its own math, and self-correct visibly rather than bury mistakes.
 
-## Known limitations to carry forward
+## Known limitations — resolved
 
-- `portfolio_monitor.html`'s live GitHub fetch was **untested as of handoff** — it may be blocked
-  by whatever sandbox it runs in (this was built inside a Claude.ai artifact, which has uncertain
-  network permissions). Running it as a plain local file or from Claude Code's environment may
-  behave differently (likely better, since there's no artifact sandbox involved) — worth confirming
-  early.
-- No GitHub MCP connector was available in the original chat session, which is the whole reason
-  this handoff exists — confirm this Claude Code session actually has working git/GitHub access
-  before assuming the PR workflow the user wants is unblocked.
+- `portfolio_monitor.html`'s live GitHub fetch was untested at handoff because it was built inside
+  a Claude.ai artifact, which provides `window.storage` for persistence but doesn't exist outside
+  that sandbox. Fixed in commit `0ecac0f`: `getCachedUrl`/`setCachedUrl`/`getCachedData`/
+  `setCachedData` now fall back to `localStorage` when `window.storage` is undefined. Verified
+  end-to-end in a real browser against the repo's raw URL — fetch, KPI row, and detail-row expand
+  all work.
+- Git/GitHub access from Claude Code is confirmed working (credential manager already configured);
+  commits push straight to `main` per the direct-commits decision above.
+- There's a stray empty file named `git` (0 bytes) at the repo root, untracked — noise from some
+  earlier command, not part of the repo structure. Left alone; safe to delete whenever.
