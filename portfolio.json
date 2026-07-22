@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-18",
+  "updated": "2026-07-22",
   "positions": [
     {
       "ticker": "SPRB",
@@ -15,6 +15,21 @@
       "status": "active",
       "questions": "Confirm diagnosed patient count via KOL; confirm exact BioMarin royalty rate; watch confirmatory-trial power given modest effect size.",
       "updated": "2026-07-18"
+    },
+    {
+      "ticker": "CNTB",
+      "company": "Connect Biopharma Holdings Limited",
+      "folder": "companies/CNTB",
+      "thesis": "Rademikibart (anti-IL-4Rα mAb) repositioned for acute exacerbations of asthma/COPD, a niche with no approved biologic competitor. SEABREEZE STAT Asthma Ph2 topline due early Sept 2026 is the binary event this whole model hinges on; rNPV Low/Base/High shown as the range.",
+      "price": 2.40,
+      "bear": 0.74,
+      "mid": 5.07,
+      "bull": 39.34,
+      "catalyst": "SEABREEZE STAT Asthma Ph2 topline",
+      "catdate": "2026-09-01",
+      "status": "active",
+      "questions": "Pull Schedule 13D/G on Panacea Venture (total stake unknown beyond $4.0mm PIPE-anchor purchase); FY2025 10-K for patent/LOE schedule and NOL balance; Q2 2026 10-Q (due ~Aug-12) for runway check; placement-agent identity for the March 2026 raise.",
+      "updated": "2026-07-22"
     }
   ]
 }

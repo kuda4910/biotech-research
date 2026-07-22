@@ -23,10 +23,16 @@ biotech-research/
 ├── templates/
 │   └── Biotech_DD_Prompt_Template.md  <- reusable prompt for kicking off a new company's full analysis
 └── companies/
-    └── SPRB/
-        ├── SPRB_Valuation_Model.xlsx  <- rNPV / DCF / relative valuation / balance sheet model
-        ├── SPRB_Thesis_Memo.docx      <- long thesis, risks, ownership, valuation summary
-        └── source_materials/          <- original documents that informed the analysis (see below)
+    ├── SPRB/
+    │   ├── SPRB_Valuation_Model.xlsx  <- rNPV / DCF / relative valuation / balance sheet model
+    │   ├── SPRB_Thesis_Memo.docx      <- long thesis, risks, ownership, valuation summary
+    │   └── source_materials/          <- original documents that informed the analysis (see below)
+    └── CNTB/
+        ├── CNTB_Valuation_Model.xlsx      <- rNPV / DCF / relative valuation / balance sheet model
+        ├── CNTB_Investment_Thesis_Memo.docx
+        ├── CNTB_Project_Context.md        <- full handoff doc: corrections log, exact row map, open items
+        ├── build/                         <- openpyxl/docx build scripts that generate the two files above
+        └── source_materials/               <- primary-source filings (10-Q etc.)
 ```
 
 ## First tasks for this session — DONE, see below for resolution
@@ -145,6 +151,101 @@ harder path and the one he explicitly ruled out ("I don't think Spruce will get 
 BioMarin") when asked directly. He also misattributed TA-ERT's origin to Ultragenyx in that same
 answer — factually wrong (it's Allievex/BioMarin, see above) — worth weighing against how much
 credit to give his other public claims.
+
+## CNTB (Connect Biopharma) — full working context
+
+Second fully-built example, onboarded from a separate Claude.ai handoff bundle. Full detail lives
+in `companies/CNTB/CNTB_Project_Context.md` (corrections log, exact row map, toolchain notes) —
+this section is the condensed version for a fresh session to work from without reading that whole
+file first.
+
+### The company
+
+Connect Biopharma Holdings Limited (NASDAQ: CNTB), incorporated Nov 2015, Cayman Islands, IPO'd
+Nasdaq March 2021. Lead (now only) asset **rademikibart**, an anti-IL-4Rα monoclonal antibody,
+now positioned for **acute exacerbations of asthma and COPD** — a niche with no approved biologic
+competitor anywhere today. This is the molecule's **third** indication reposition: originally
+atopic dermatitis (global Ph3 never started post-2022 funding retreat, though the China-only AD
+trial for partner Simcere did meet its endpoints), then chronic asthma, now acute exacerbations
+under 2024-installed US-centric leadership (CEO Barry Quart). Read as either disciplined
+optionality-seeking on a validated target, or a search for a clean readout — both fit the facts.
+
+### Pipeline / the binary event this model hinges on
+
+**SEABREEZE STAT Asthma** (Ph2, n≈160, acute exacerbations): enrollment complete 17-Jun-2026,
+**topline expected early September 2026**. **SEABREEZE STAT COPD** (same size): topline modeled
+as Q4 2026 (our estimate, no firm company date). A clean DMC interim safety review (23-Apr-2026,
+no sample-size change) is a procedural positive only, not an efficacy signal. When Asthma topline
+lands, the whole PoS-driven model structure should be revisited (not just patched) — a positive
+readout should collapse the Ph2 PoS assumption toward ~100% and shift focus to pricing/penetration.
+
+### The valuation model (CNTB_Valuation_Model.xlsx)
+
+Six tabs (Cover & Assumptions, Balance Sheet & Runway, rNPV, DCF, Relative Valuation, Price Target
+Summary), 712 formulas, 0 recalc errors as of handoff. Base case:
+
+| Method | Output |
+|---|---|
+| rNPV (Low / Base / High) | **$0.74 / $5.07 / $39.34** |
+| DCF ceiling (unrisked, "if it works") | **$16.73** |
+| Relative valuation (EV/risk-adj peak sales vs. Upstream Bio, ~0.070x) | **$1.08** |
+| Blended target (60% rNPV / 40% RelVal, DCF excluded) | **$3.48** |
+| Current price (~1-Jul-2026 snapshot) | **$2.40** |
+| Street consensus (median of 6 analysts) | **$7.00** |
+
+Note the relative-valuation multiple comes in **below** rNPV here (opposite of SPRB, where RelVal
+was the bull case) — Upstream Bio's post-Ph2-miss selloff depressed its EV/peak-sales multiple to
+~0.070x, so applying it to CNTB's own peak sales yields a low implied value. `portfolio.json` uses
+the model's own rNPV Low/Base/High as bear/mid/bull (the most internally-consistent single-method
+range), not a cross-method mix.
+
+**Built entirely via code** (unlike SPRB): `companies/CNTB/build/` has the openpyxl scripts
+(`build1.py`...`build8.py`, `patch1.py`...`patch6.py`, `helpers.py`, `row_map.json`) and the
+docx scripts (`memo_partA.js`, `memo_partB.js`) that generate the two deliverable files. To change
+an assumption, edit the relevant Low/Base/High cell in Cover & Assumptions directly in the xlsx (or
+add a new patch script) — downstream tabs update via formula. **Fragile spot**: in the rNPV tab,
+columns C–V are year-data columns; put notes in column X, not into any C–V cell (this caused
+`#VALUE!` errors once during the build).
+
+### Known corrections already made (don't re-flag as new issues)
+
+- Fully-diluted share count: was a placeholder ~66.5mm guess → confirmed **~78.48mm** (62.71mm
+  basic + 15.17mm options @ $2.08 WA strike + 0.6mm ESPP) from the actual Q1 2026 10-Q.
+- Total liquidity: was modeled as $46.0mm on a guessed cash/ST-investment split → corrected to
+  **$52.03mm** ($46.034mm cash + $5.997mm short-term investments) — press summaries quoting
+  "$46.0mm" as the total are wrong, that's only the cash line.
+- **March 2026 private placement ($20.2mm gross, $3.25/share) was led by Panacea Venture**,
+  described in the 10-Q as CNTB's largest current investor. Board member James Huang is the sole
+  owner of Panacea Innovation Limited, which owns Panacea Venture — so this is a **related-party
+  transaction** (Panacea bought $4.0mm of the round), not generic PIPE participation. Don't
+  conflate with Huang's separate, smaller open-market purchase (150,000 shares, $2.48, 29-May-2026).
+- China milestone realization probability revised **down** (20/35/50% → 15/30/45%) after
+  confirming a real, already-materialized precedent: Simcere missed a milestone deadline and
+  **~$8mm lapsed in 2025**. Remaining eligible China milestones: ~$110mm of the original $123mm.
+- Company incorporation date confirmed **November 2015** (secondary sources were ambiguous
+  2012 vs. 2015).
+
+### Open questions flagged for the user's own research (highest-value first)
+
+1. **Schedule 13D/G on Panacea Venture** — resolves its *total* stake beyond the $4.0mm PIPE
+   purchase; likely the single most important ownership fact currently missing.
+2. FY2025 10-K — patent/IP section (resolves the 2038/2040/2042 loss-of-exclusivity estimate,
+   currently a guess) and the NOL carryforward footnote.
+3. Q2 2026 10-Q, due ~12-Aug-2026 — tests the mechanical burn-extrapolation runway estimate
+   against management's "≥12 months from the 12-May-2026 filing" framing (~May-2027 floor).
+4. Full AJRCCM paper for the prior chronic-asthma Ph2 (only have the press-release
+   characterization of effect sizes so far).
+5. Private placement Form D / placement-agent identity — the ~$1.6mm placement-agent fee is
+   confirmed in the 10-Q, but not who received it (sell-side conflict-of-interest question).
+6. Current DEF 14A/proxy — board composition, founder's remaining influence, exec comp.
+
+### Analyst coverage (as of Jul-2026, not re-verified since original research)
+
+H.C. Wainwright $7 Buy, BTIG $10 Buy, Cantor Fitzgerald $4 Overweight, Canaccord Genuity $6 Buy,
+Piper Sandler $7 Overweight, Oppenheimer $8 Outperform (initiated 9-Jul-2026). Median ~$7, all but
+one initiated in the ~10 weeks before the September data — pre-catalyst positioning, no firm here
+has a track record through an actual CNTB readout. Placement-agent identity for the March 2026
+raise is unconfirmed against this list (see open questions above).
 
 ## The reusable template (templates/Biotech_DD_Prompt_Template.md)
 
