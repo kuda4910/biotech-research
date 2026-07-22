@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Portfolio Monitor</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#ffffff; --surface:#f6f7f9; --surface-hi:#eef0f3; --line:#e2e4e8;
+    --ink:#0e1116; --ink-soft:#3c4350; --text-dim:#6b7280; --text-faint:#9aa1ac;
+    --navy:#0a2540; --accent:#175cd3; --accent-soft:#e8f0fe;
+    --up:#1b7a4d; --down:#b3261e;
+    --sans:'Inter',sans-serif; --mono:'Roboto Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:14px;}
+
+  .masthead{background:var(--navy); color:#fff; padding:16px 28px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;}
+  .wordmark{font-weight:700; font-size:16px; letter-spacing:0.01em;}
+  .wordmark span{color:#9db8d8; font-weight:400; margin-left:8px; font-size:12px;}
+  .masthead-right{display:flex; align-items:center; gap:18px; font-family:var(--mono); font-size:11px; color:#c3d2e3;}
+
+  .syncbar{
+    background:var(--surface); border-bottom:1px solid var(--line); padding:9px 28px;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+  .syncleft{display:flex; align-items:center; gap:10px; font-size:12px; color:var(--text-dim);}
+  .dot{width:7px; height:7px; border-radius:50%; background:var(--text-faint); flex-shrink:0;}
+  .dot.ok{background:var(--up);} .dot.err{background:var(--down);} .dot.pending{background:#c99a2e;}
+  .syncbar .src{font-family:var(--mono); color:var(--ink-soft);}
+  .syncbtns{display:flex; gap:8px;}
+  .btn-ghost{background:#fff; border:1px solid var(--line); color:var(--ink-soft); padding:6px 12px; border-radius:3px; font-size:12px; cursor:pointer; font-family:var(--sans);}
+  .btn-ghost:hover{border-color:var(--accent); color:var(--accent);}
+  .btn-primary{background:var(--navy); border:1px solid var(--navy); color:#fff; padding:6px 14px; border-radius:3px; font-size:12px; cursor:pointer; font-family:var(--sans); font-weight:500;}
+  .btn-primary:hover{background:#0d3358;}
+
+  .content{padding:22px 28px 60px; max-width:1240px; margin:0 auto;}
+
+  .kpirow{display:flex; gap:1px; background:var(--line); border:1px solid var(--line); margin-bottom:22px; border-radius:4px; overflow:hidden;}
+  .kpi{flex:1; background:#fff; padding:14px 18px;}
+  .kpi .v{font-family:var(--mono); font-size:20px; font-weight:600; color:var(--ink);}
+  .kpi .l{font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.04em; margin-top:3px;}
+
+  table{width:100%; border-collapse:collapse;}
+  thead th{
+    text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-dim);
+    font-weight:600; padding:8px 12px; border-bottom:2px solid var(--ink); cursor:pointer; user-select:none;
+    white-space:nowrap;
+  }
+  thead th:hover{color:var(--accent);}
+  thead th.num, td.num{text-align:right;}
+  tbody tr{border-bottom:1px solid var(--line); cursor:pointer;}
+  tbody tr:hover{background:var(--surface);}
+  tbody td{padding:11px 12px; vertical-align:middle;}
+  .tkr{font-weight:700; font-family:var(--mono); font-size:13px;}
+  .cmp{color:var(--text-dim); font-size:12px; display:block; margin-top:1px;}
+  .status{display:flex; align-items:center; gap:6px; font-size:11px; color:var(--ink-soft); white-space:nowrap;}
+  .status .d{width:6px; height:6px; border-radius:50%;}
+  .status.active .d{background:var(--up);}
+  .status.monitoring .d{background:#c99a2e;}
+  .status.researching .d{background:var(--accent);}
+  .status.exited .d{background:var(--text-faint);}
+  .price-cell{font-family:var(--mono); font-weight:600; text-align:right;}
+  .delta{font-family:var(--mono); font-size:11px; text-align:right; display:block;}
+  .delta.pos{color:var(--up);} .delta.neg{color:var(--down);}
+  .rangecell{width:150px;}
+  .rangebar{position:relative; height:16px;}
+  .rangebar .track{position:absolute; top:7px; left:0; right:0; height:2px; background:var(--line);}
+  .rangebar .fillrange{position:absolute; top:7px; height:2px; background:var(--ink-soft);}
+  .rangebar .tick{position:absolute; top:3px; width:1px; height:10px; background:var(--text-faint);}
+  .rangebar .basetick{position:absolute; top:1px; width:2px; height:14px; background:var(--accent);}
+  .rangebar .nowtick{position:absolute; top:-3px; width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-top:6px solid var(--ink);}
+  .catcell{font-size:12px;}
+  .catcell .d{color:var(--text-dim); font-size:11px; display:block; font-family:var(--mono);}
+  .foldercell a{color:var(--accent); text-decoration:none; font-size:11px; font-family:var(--mono);}
+  .foldercell a:hover{text-decoration:underline;}
+
+  .detailrow td{background:var(--surface); padding:16px 24px; border-bottom:1px solid var(--line);}
+  .detailgrid{display:grid; grid-template-columns:1fr 1fr; gap:14px 30px;}
+  .dlabel{font-size:10px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-dim); margin-bottom:3px; font-weight:600;}
+  .dval{font-size:12.5px; color:var(--ink-soft); line-height:1.55;}
+
+  .empty, .fetcherr{
+    text-align:center; padding:50px 20px; color:var(--text-dim); border:1px dashed var(--line); border-radius:4px; font-size:13px;
+  }
+  .fetcherr{border-color:#f2c6c2; background:#fdf5f4; color:#8a352d;}
+  .fetcherr code{background:#fff; padding:1px 5px; border-radius:2px; border:1px solid #f2c6c2; font-family:var(--mono); font-size:11px;}
+
+  .modal-bg{display:none; position:fixed; inset:0; background:rgba(10,20,30,0.45); z-index:50; align-items:center; justify-content:center; padding:20px;}
+  .modal-bg.show{display:flex;}
+  .modal{background:#fff; border-radius:6px; padding:24px; max-width:540px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 12px 40px rgba(0,0,0,0.2);}
+  .modal h2{font-size:15px; margin:0 0 6px; font-weight:700;}
+  .modal p.hint{font-size:12px; color:var(--text-dim); margin:0 0 16px; line-height:1.5;}
+  .field{margin-bottom:12px;}
+  .field label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.03em; color:var(--text-dim); margin-bottom:5px; font-weight:600;}
+  .field input, .field textarea, .field select{width:100%; border:1px solid var(--line); background:#fff; color:var(--ink); padding:8px 10px; border-radius:3px; font-family:var(--sans); font-size:13px;}
+  .field textarea{min-height:56px; resize:vertical;}
+  .field-row{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+  .jsonout{background:var(--ink); color:#d8e3f0; font-family:var(--mono); font-size:11.5px; padding:14px; border-radius:4px; white-space:pre-wrap; word-break:break-word; max-height:220px; overflow-y:auto;}
+  .modal-actions{display:flex; justify-content:flex-end; gap:8px; margin-top:16px;}
+
+  .footer{text-align:center; font-size:11px; color:var(--text-faint); padding:20px; font-family:var(--mono);}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="wordmark">PORTFOLIO MONITOR <span>biotech research desk</span></div>
+  <div class="masthead-right" id="clock"></div>
+</div>
+
+<div class="syncbar">
+  <div class="syncleft">
+    <span class="dot pending" id="syncDot"></span>
+    <span id="syncText">Not connected</span>
+    <span class="src" id="syncSrc"></span>
+  </div>
+  <div class="syncbtns">
+    <button class="btn-ghost" id="configBtn">Configure source</button>
+    <button class="btn-ghost" id="newBtn">+ New position (JSON)</button>
+    <button class="btn-primary" id="refreshBtn">Refresh</button>
+  </div>
+</div>
+
+<div class="content">
+  <div class="kpirow">
+    <div class="kpi"><div class="v" id="kpiCount">–</div><div class="l">Positions</div></div>
+    <div class="kpi"><div class="v" id="kpiActive">–</div><div class="l">Active thesis</div></div>
+    <div class="kpi"><div class="v" id="kpiCatalyst">–</div><div class="l">Next catalyst</div></div>
+    <div class="kpi"><div class="v" id="kpiUpdated">–</div><div class="l">Index last updated</div></div>
+  </div>
+
+  <div id="tableWrap"></div>
+</div>
+
+<div class="footer">Reads a single portfolio.json from a GitHub repo you control. Edit that file in GitHub to update the data — this view does not write back.</div>
+
+<div class="modal-bg" id="configModalBg">
+  <div class="modal">
+    <h2>Configure data source</h2>
+    <p class="hint">Point this at the raw URL of your portfolio.json — e.g. https://raw.githubusercontent.com/USERNAME/REPO/main/portfolio.json (repo must be public for this to load without a token).</p>
+    <div class="field"><label>Raw GitHub URL</label><input id="cfgUrl" placeholder="https://raw.githubusercontent.com/you/biotech-research/main/portfolio.json"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="cfgCancel">Cancel</button>
+      <button class="btn-primary" id="cfgSave">Save & Load</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="newModalBg">
+  <div class="modal">
+    <h2>New position — JSON snippet</h2>
+    <p class="hint">Fill this in, then copy the JSON below and paste it into the "positions" array in your portfolio.json on GitHub. This tool doesn't push to GitHub for you (no credentials are handled here) — this just saves you writing the JSON by hand.</p>
+    <div class="field-row">
+      <div class="field"><label>Ticker</label><input id="n_ticker" placeholder="XYZB"></div>
+      <div class="field"><label>Status</label>
+        <select id="n_status"><option value="researching">Researching</option><option value="active" selected>Active</option><option value="monitoring">Monitoring</option><option value="exited">Exited</option></select>
+      </div>
+      <div class="field"><label>Folder</label><input id="n_folder" placeholder="companies/XYZB"></div>
+    </div>
+    <div class="field"><label>Company name</label><input id="n_company"></div>
+    <div class="field"><label>Thesis</label><textarea id="n_thesis"></textarea></div>
+    <div class="field-row">
+      <div class="field"><label>Price</label><input id="n_price" type="number" step="0.01"></div>
+      <div class="field"><label>Bear</label><input id="n_bear" type="number" step="0.01"></div>
+      <div class="field"><label>Bull</label><input id="n_bull" type="number" step="0.01"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Base target</label><input id="n_mid" type="number" step="0.01"></div>
+      <div class="field"><label>Catalyst</label><input id="n_catalyst"></div>
+      <div class="field"><label>Catalyst date</label><input id="n_catdate" type="date"></div>
+    </div>
+    <div class="field"><label>Open questions</label><textarea id="n_questions"></textarea></div>
+    <div class="field"><label>Generated JSON</label><div class="jsonout" id="n_output">—</div></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="newCancel">Close</button>
+      <button class="btn-primary" id="n_copy">Copy JSON</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let positions = [];
+let sourceUrl = '';
+let sortMode = {key:'catdate', dir:1};
+
+function fmtMoney(v){ if(v===null||v===undefined||isNaN(v)) return '—'; return '$'+Number(v).toFixed(2); }
+function daysUntil(dateStr){ if(!dateStr) return Infinity; const d=new Date(dateStr+'T00:00:00'); return Math.ceil((d-new Date())/(1000*60*60*24)); }
+function fmtDate(dateStr){ if(!dateStr) return ''; const d=new Date(dateStr+'T00:00:00'); return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+
+function tickClock(){
+  document.getElementById('clock').textContent = new Date().toLocaleString('en-US', {weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+}
+tickClock(); setInterval(tickClock, 30000);
+
+async function getCachedUrl(){
+  try{ const r = await window.storage.get('source_url', false); return r ? JSON.parse(r.value) : null; }catch(e){ return null; }
+}
+async function setCachedUrl(url){
+  try{ await window.storage.set('source_url', JSON.stringify(url), false); }catch(e){}
+}
+async function getCachedData(){
+  try{ const r = await window.storage.get('cached_portfolio', false); return r ? JSON.parse(r.value) : null; }catch(e){ return null; }
+}
+async function setCachedData(data){
+  try{ await window.storage.set('cached_portfolio', JSON.stringify(data), false); }catch(e){}
+}
+
+function setSync(state, text, src){
+  const dot = document.getElementById('syncDot');
+  dot.className = 'dot '+state;
+  document.getElementById('syncText').textContent = text;
+  document.getElementById('syncSrc').textContent = src || '';
+}
+
+async function loadFromSource(){
+  sourceUrl = await getCachedUrl();
+  if(!sourceUrl){
+    setSync('pending', 'Not connected — click "Configure source"');
+    const cached = await getCachedData();
+    if(cached){ positions = cached.positions||[]; renderAll(cached.updated); }
+    else { renderEmpty(); }
+    return;
+  }
+  setSync('pending', 'Fetching…', sourceUrl);
+  try{
+    const res = await fetch(sourceUrl, {cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    positions = data.positions || [];
+    await setCachedData(data);
+    setSync('ok', 'Synced from GitHub', sourceUrl);
+    renderAll(data.updated);
+  }catch(e){
+    const cached = await getCachedData();
+    if(cached){
+      positions = cached.positions || [];
+      setSync('err', 'Live fetch failed — showing last cached copy', String(e.message||e));
+      renderAll(cached.updated, true);
+    } else {
+      setSync('err', 'Fetch failed, no cache available', String(e.message||e));
+      renderFetchError(e);
+    }
+  }
+}
+
+function renderFetchError(e){
+  document.getElementById('tableWrap').innerHTML = `
+    <div class="fetcherr">
+      Could not load <code>${sourceUrl}</code> from inside this artifact.<br><br>
+      This is most likely the artifact sandbox blocking outbound network requests to external sites (a platform restriction, not a problem with your repo).
+      If this persists, the reliable fallback is exporting/reviewing portfolio.json directly on GitHub, or asking Claude to paste its contents into a fresh version of this dashboard.<br><br>
+      <span style="font-family:var(--mono); font-size:10px;">${e.message||e}</span>
+    </div>`;
+}
+
+function renderEmpty(){
+  document.getElementById('tableWrap').innerHTML = '<div class="empty">No source configured yet. Click "Configure source" and point this at your portfolio.json\'s raw GitHub URL.</div>';
+  document.getElementById('kpiCount').textContent='0';
+  document.getElementById('kpiActive').textContent='0';
+  document.getElementById('kpiCatalyst').textContent='—';
+  document.getElementById('kpiUpdated').textContent='—';
+}
+
+function sortRows(list){
+  const arr=[...list];
+  const {key,dir}=sortMode;
+  arr.sort((a,b)=>{
+    let av,bv;
+    if(key==='catdate'){ av=daysUntil(a.catdate); bv=daysUntil(b.catdate); }
+    else if(key==='upside'){ av=(a.mid&&a.price)?(a.mid-a.price)/a.price:-999; bv=(b.mid&&b.price)?(b.mid-b.price)/b.price:-999; }
+    else if(key==='ticker'){ av=a.ticker||''; bv=b.ticker||''; return dir*av.localeCompare(bv); }
+    else if(key==='price'){ av=a.price||0; bv=b.price||0; }
+    else { av=a[key]||0; bv=b[key]||0; }
+    return dir*(av-bv);
+  });
+  return arr;
+}
+
+function renderAll(indexUpdated, stale){
+  document.getElementById('kpiCount').textContent = positions.length;
+  document.getElementById('kpiActive').textContent = positions.filter(p=>p.status==='active').length;
+  const upcoming = positions.filter(p=>p.catdate && daysUntil(p.catdate)>=0).sort((a,b)=>daysUntil(a.catdate)-daysUntil(b.catdate));
+  document.getElementById('kpiCatalyst').textContent = upcoming.length ? upcoming[0].ticker : '—';
+  document.getElementById('kpiUpdated').textContent = indexUpdated || '—';
+
+  if(positions.length===0){ renderEmpty(); return; }
+
+  const rows = sortRows(positions);
+  const html = `
+  <table>
+    <thead><tr>
+      <th data-k="ticker">Ticker / Company</th>
+      <th data-k="status">Status</th>
+      <th class="num" data-k="price">Price</th>
+      <th>Range (bear · base · bull)</th>
+      <th class="num" data-k="upside">Δ to base</th>
+      <th data-k="catdate">Next catalyst</th>
+      <th>Folder</th>
+    </tr></thead>
+    <tbody>
+    ${rows.map((p,i)=>{
+      const bear=parseFloat(p.bear), bull=parseFloat(p.bull), mid=parseFloat(p.mid), price=parseFloat(p.price);
+      const lo=Math.min(bear||0, price||0), hi=Math.max(bull||0, price||0, 0.01);
+      const pct = v => Math.max(0,Math.min(100,((v-lo)/(hi-lo))*100));
+      const upside = (mid&&price) ? ((mid-price)/price*100) : null;
+      return `
+      <tr class="mainrow" data-idx="${i}">
+        <td><span class="tkr">${p.ticker||'—'}</span><span class="cmp">${p.company||''}</span></td>
+        <td><span class="status ${p.status}"><span class="d"></span>${p.status||''}</span></td>
+        <td class="price-cell">${fmtMoney(price)}</td>
+        <td class="rangecell">
+          <div class="rangebar">
+            <div class="track"></div>
+            ${bear&&bull?`<div class="fillrange" style="left:${pct(bear)}%; width:${pct(bull)-pct(bear)}%;"></div>`:''}
+            ${bear?`<div class="tick" style="left:${pct(bear)}%;"></div>`:''}
+            ${bull?`<div class="tick" style="left:${pct(bull)}%;"></div>`:''}
+            ${mid?`<div class="basetick" style="left:${pct(mid)}%;"></div>`:''}
+            ${price?`<div class="nowtick" style="left:calc(${pct(price)}% - 4px);"></div>`:''}
+          </div>
+        </td>
+        <td class="num">${upside!==null?`<span class="delta ${upside>=0?'pos':'neg'}">${upside>=0?'+':''}${upside.toFixed(0)}%</span>`:'—'}</td>
+        <td class="catcell">${p.catalyst||'—'}<span class="d">${p.catdate?fmtDate(p.catdate):''}</span></td>
+        <td class="foldercell">${p.folder?`<a href="#" onclick="return false;">${p.folder}</a>`:'—'}</td>
+      </tr>
+      <tr class="detailrow" data-detail="${i}" style="display:none;">
+        <td colspan="7">
+          <div class="detailgrid">
+            <div><div class="dlabel">Thesis</div><div class="dval">${p.thesis||'—'}</div></div>
+            <div><div class="dlabel">Open questions</div><div class="dval">${p.questions||'—'}</div></div>
+          </div>
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table>`;
+  document.getElementById('tableWrap').innerHTML = html;
+
+  document.querySelectorAll('.mainrow').forEach(tr=>{
+    tr.addEventListener('click', ()=>{
+      const idx = tr.dataset.idx;
+      const dr = document.querySelector(`.detailrow[data-detail="${idx}"]`);
+      dr.style.display = dr.style.display==='none' ? 'table-row' : 'none';
+    });
+  });
+  document.querySelectorAll('thead th[data-k]').forEach(th=>{
+    th.addEventListener('click', ()=>{
+      const k = th.dataset.k;
+      sortMode.dir = (sortMode.key===k) ? -sortMode.dir : 1;
+      sortMode.key = k;
+      renderAll(indexUpdated, stale);
+    });
+  });
+}
+
+document.getElementById('refreshBtn').addEventListener('click', loadFromSource);
+document.getElementById('configBtn').addEventListener('click', async ()=>{
+  document.getElementById('cfgUrl').value = (await getCachedUrl()) || '';
+  document.getElementById('configModalBg').classList.add('show');
+});
+document.getElementById('cfgCancel').addEventListener('click', ()=> document.getElementById('configModalBg').classList.remove('show'));
+document.getElementById('cfgSave').addEventListener('click', async ()=>{
+  const url = document.getElementById('cfgUrl').value.trim();
+  if(!url){ alert('Enter a URL first.'); return; }
+  await setCachedUrl(url);
+  document.getElementById('configModalBg').classList.remove('show');
+  loadFromSource();
+});
+
+document.getElementById('newBtn').addEventListener('click', ()=> document.getElementById('newModalBg').classList.add('show'));
+document.getElementById('newCancel').addEventListener('click', ()=> document.getElementById('newModalBg').classList.remove('show'));
+function buildJsonSnippet(){
+  const obj = {
+    ticker: document.getElementById('n_ticker').value.trim().toUpperCase(),
+    company: document.getElementById('n_company').value.trim(),
+    folder: document.getElementById('n_folder').value.trim(),
+    thesis: document.getElementById('n_thesis').value.trim(),
+    price: parseFloat(document.getElementById('n_price').value)||null,
+    bear: parseFloat(document.getElementById('n_bear').value)||null,
+    mid: parseFloat(document.getElementById('n_mid').value)||null,
+    bull: parseFloat(document.getElementById('n_bull').value)||null,
+    catalyst: document.getElementById('n_catalyst').value.trim(),
+    catdate: document.getElementById('n_catdate').value,
+    status: document.getElementById('n_status').value,
+    questions: document.getElementById('n_questions').value.trim(),
+    updated: new Date().toISOString().slice(0,10)
+  };
+  document.getElementById('n_output').textContent = JSON.stringify(obj, null, 2)+',';
+}
+['n_ticker','n_company','n_folder','n_thesis','n_price','n_bear','n_mid','n_bull','n_catalyst','n_catdate','n_status','n_questions'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', buildJsonSnippet);
+  document.getElementById(id).addEventListener('change', buildJsonSnippet);
+});
+document.getElementById('n_copy').addEventListener('click', ()=>{
+  const text = document.getElementById('n_output').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    document.getElementById('n_copy').textContent = 'Copied!';
+    setTimeout(()=> document.getElementById('n_copy').textContent='Copy JSON', 1200);
+  });
+});
+
+[document.getElementById('configModalBg'), document.getElementById('newModalBg')].forEach(bg=>{
+  bg.addEventListener('click', (e)=>{ if(e.target===bg) bg.classList.remove('show'); });
+});
+
+loadFromSource();
+</script>
+</body>
+</html>

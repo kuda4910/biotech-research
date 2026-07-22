@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Portfolio Ledger</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+  :root{
+    --bg: #14171c;
+    --panel: #1b1f26;
+    --panel-hi: #232833;
+    --line: #2e3440;
+    --text: #e8e6e0;
+    --text-dim: #8b93a1;
+    --text-faint: #5a6270;
+    --up: #4fae8e;
+    --down: #c1553d;
+    --amber: #d9a441;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text); font-family:var(--sans);
+    padding: 28px 20px 60px; min-height:100vh;
+  }
+  .wrap{max-width:1100px; margin:0 auto;}
+
+  .masthead{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:20px; flex-wrap:wrap; gap:12px;
+  }
+  .masthead h1{
+    font-family:var(--mono); font-weight:700; font-size:20px; letter-spacing:0.02em; margin:0;
+    text-transform:uppercase;
+  }
+  .masthead .sub{font-family:var(--mono); font-size:11px; color:var(--text-faint); margin-top:4px;}
+  .stats{display:flex; gap:22px; font-family:var(--mono);}
+  .stat{text-align:right;}
+  .stat .n{font-size:18px; font-weight:600;}
+  .stat .l{font-size:10px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.06em;}
+
+  .toolbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:10px; flex-wrap:wrap;}
+  .sortbar{display:flex; gap:6px; font-family:var(--mono); font-size:11px;}
+  .sortbar button{
+    background:var(--panel); border:1px solid var(--line); color:var(--text-dim); padding:6px 10px;
+    border-radius:3px; cursor:pointer; font-family:var(--mono); font-size:11px;
+  }
+  .sortbar button.active{color:var(--amber); border-color:var(--amber);}
+  .addbtn{
+    background:var(--amber); color:#14171c; border:none; padding:8px 16px; border-radius:3px;
+    font-family:var(--mono); font-weight:600; font-size:12px; cursor:pointer; letter-spacing:0.02em;
+  }
+  .addbtn:hover{opacity:0.9;}
+
+  .row{
+    background:var(--panel); border:1px solid var(--line); border-radius:4px; margin-bottom:8px;
+    padding:14px 16px; cursor:pointer; transition:border-color .15s;
+  }
+  .row:hover{border-color:#3d4453;}
+  .row-top{display:flex; justify-content:space-between; align-items:center; gap:14px;}
+  .row-id{display:flex; align-items:baseline; gap:10px; min-width:0;}
+  .ticker{font-family:var(--mono); font-weight:700; font-size:15px; letter-spacing:0.02em;}
+  .company{font-size:12px; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .status-chip{
+    font-family:var(--mono); font-size:9px; text-transform:uppercase; letter-spacing:0.05em;
+    padding:2px 7px; border-radius:2px; border:1px solid var(--line); color:var(--text-dim); flex-shrink:0;
+  }
+  .status-chip.active{color:var(--up); border-color:var(--up);}
+  .status-chip.monitoring{color:var(--amber); border-color:var(--amber);}
+  .status-chip.exited{color:var(--text-faint); border-color:var(--line);}
+
+  .row-mid{display:flex; align-items:center; gap:16px; margin-top:10px;}
+  .rangebar{flex:1; position:relative; height:22px;}
+  .rangebar .track{position:absolute; top:9px; left:0; right:0; height:3px; background:var(--line); border-radius:2px;}
+  .rangebar .fill{position:absolute; top:9px; height:3px; background:linear-gradient(90deg, var(--down), var(--text-faint) 50%, var(--up)); border-radius:2px;}
+  .rangebar .mark{position:absolute; top:4px; width:2px; height:14px; background:var(--text-faint);}
+  .rangebar .mark.mid{background:var(--text-dim);}
+  .rangebar .now{
+    position:absolute; top:-2px; width:0; height:0;
+    border-left:5px solid transparent; border-right:5px solid transparent; border-top:7px solid var(--amber);
+  }
+  .rangelabels{display:flex; justify-content:space-between; font-family:var(--mono); font-size:9px; color:var(--text-faint); margin-top:2px;}
+
+  .pricecol{font-family:var(--mono); text-align:right; min-width:150px; flex-shrink:0;}
+  .pricecol .now-price{font-size:14px; font-weight:600;}
+  .pricecol .updown{font-size:11px;}
+  .updown.pos{color:var(--up);} .updown.neg{color:var(--down);}
+
+  .row-detail{
+    margin-top:12px; padding-top:12px; border-top:1px dashed var(--line);
+    font-size:12px; color:var(--text-dim); display:none; line-height:1.6;
+  }
+  .row.expanded .row-detail{display:block;}
+  .detail-grid{display:grid; grid-template-columns: 1fr 1fr; gap:10px 24px; margin-bottom:10px;}
+  .detail-label{font-family:var(--mono); font-size:9px; text-transform:uppercase; color:var(--text-faint); letter-spacing:0.05em; margin-bottom:2px;}
+  .detail-val{color:var(--text);}
+  .row-actions{display:flex; gap:8px; margin-top:10px;}
+  .row-actions button{
+    background:var(--panel-hi); border:1px solid var(--line); color:var(--text-dim); padding:5px 12px;
+    border-radius:3px; font-family:var(--mono); font-size:10px; cursor:pointer;
+  }
+  .row-actions button.danger:hover{color:var(--down); border-color:var(--down);}
+  .row-actions button.edit:hover{color:var(--amber); border-color:var(--amber);}
+
+  .empty{
+    text-align:center; padding:60px 20px; color:var(--text-faint); font-family:var(--mono); font-size:12px;
+    border:1px dashed var(--line); border-radius:4px;
+  }
+
+  .modal-bg{
+    display:none; position:fixed; inset:0; background:rgba(10,12,15,0.75); z-index:50;
+    align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-bg.show{display:flex;}
+  .modal{
+    background:var(--panel-hi); border:1px solid var(--line); border-radius:6px; padding:22px;
+    max-width:520px; width:100%; max-height:88vh; overflow-y:auto;
+  }
+  .modal h2{font-family:var(--mono); font-size:14px; margin:0 0 16px; text-transform:uppercase; letter-spacing:0.03em;}
+  .field{margin-bottom:12px;}
+  .field label{display:block; font-family:var(--mono); font-size:10px; text-transform:uppercase; color:var(--text-faint); margin-bottom:5px; letter-spacing:0.04em;}
+  .field input, .field textarea, .field select{
+    width:100%; background:var(--bg); border:1px solid var(--line); color:var(--text); padding:8px 10px;
+    border-radius:3px; font-family:var(--sans); font-size:13px;
+  }
+  .field textarea{resize:vertical; min-height:50px; font-family:var(--sans);}
+  .field-row{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+  .modal-actions{display:flex; justify-content:flex-end; gap:8px; margin-top:18px;}
+  .btn-cancel{background:transparent; border:1px solid var(--line); color:var(--text-dim); padding:8px 16px; border-radius:3px; font-family:var(--mono); font-size:12px; cursor:pointer;}
+  .btn-save{background:var(--amber); border:none; color:#14171c; padding:8px 16px; border-radius:3px; font-family:var(--mono); font-weight:600; font-size:12px; cursor:pointer;}
+
+  .loading-note{text-align:center; padding:30px; color:var(--text-faint); font-family:var(--mono); font-size:11px;}
+  .footer-note{margin-top:20px; font-family:var(--mono); font-size:10px; color:var(--text-faint); text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="masthead">
+    <div>
+      <h1>Portfolio Ledger</h1>
+      <div class="sub">biotech thesis tracker — personal, browser-persisted</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n" id="statCount">–</div><div class="l">Positions</div></div>
+      <div class="stat"><div class="n" id="statActive">–</div><div class="l">Active Thesis</div></div>
+      <div class="stat"><div class="n" id="statNext">–</div><div class="l">Next Catalyst</div></div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="sortbar">
+      <button data-sort="catalyst" class="active">Next catalyst</button>
+      <button data-sort="upside">Upside</button>
+      <button data-sort="updated">Recently updated</button>
+      <button data-sort="ticker">Ticker A–Z</button>
+    </div>
+    <button class="addbtn" id="addBtn">+ Add Position</button>
+  </div>
+
+  <div id="rows"></div>
+  <div class="footer-note">Data stored locally to your account, visible only to you. Use this as an index — full models and memos live in each company's own file(s) / Claude Project.</div>
+</div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h2 id="modalTitle">Add Position</h2>
+    <div class="field"><label>Ticker</label><input id="f_ticker" placeholder="SPRB"></div>
+    <div class="field"><label>Company name</label><input id="f_company" placeholder="Spruce Biosciences, Inc."></div>
+    <div class="field"><label>One-line thesis</label><textarea id="f_thesis" placeholder="Sole ERT for MPS IIIB, BLA filing Q4-26, watching patient-population and confirmatory-trial risk."></textarea></div>
+    <div class="field-row">
+      <div class="field"><label>Current price</label><input id="f_price" type="number" step="0.01" placeholder="43.54"></div>
+      <div class="field"><label>Bear target</label><input id="f_bear" type="number" step="0.01" placeholder="19"></div>
+      <div class="field"><label>Bull target</label><input id="f_bull" type="number" step="0.01" placeholder="165"></div>
+    </div>
+    <div class="field"><label>Base / blended target</label><input id="f_mid" type="number" step="0.01" placeholder="51"></div>
+    <div class="field-row">
+      <div class="field"><label>Next catalyst</label><input id="f_catalyst" placeholder="BLA filing"></div>
+      <div class="field"><label>Catalyst date (approx)</label><input id="f_catdate" type="date"></div>
+      <div class="field"><label>Status</label>
+        <select id="f_status">
+          <option value="researching">Researching</option>
+          <option value="active" selected>Active Thesis</option>
+          <option value="monitoring">Monitoring</option>
+          <option value="exited">Exited</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Open questions / what would move this most</label><textarea id="f_questions" placeholder="Confirm diagnosed patient count via KOL; confirm exact BioMarin royalty rate."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="cancelBtn">Cancel</button>
+      <button class="btn-save" id="saveBtn">Save Position</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const rowsEl = document.getElementById('rows');
+let positions = [];
+let editingId = null;
+let sortMode = 'catalyst';
+
+async function loadPositions(){
+  rowsEl.innerHTML = '<div class="loading-note">Loading ledger…</div>';
+  try{
+    const result = await window.storage.get('positions', false);
+    positions = result ? JSON.parse(result.value) : [];
+  }catch(e){
+    positions = [];
+  }
+  render();
+}
+
+async function savePositions(){
+  try{
+    await window.storage.set('positions', JSON.stringify(positions), false);
+  }catch(e){
+    console.error('Storage error', e);
+  }
+}
+
+function fmtMoney(v){
+  if(v===null||v===undefined||isNaN(v)) return '—';
+  return '$'+Number(v).toFixed(2);
+}
+function daysUntil(dateStr){
+  if(!dateStr) return Infinity;
+  const d = new Date(dateStr+'T00:00:00');
+  const now = new Date();
+  return Math.ceil((d-now)/(1000*60*60*24));
+}
+function fmtCatalystDate(dateStr){
+  if(!dateStr) return '';
+  const days = daysUntil(dateStr);
+  const d = new Date(dateStr+'T00:00:00');
+  const label = d.toLocaleDateString('en-US', {month:'short', year:'numeric'});
+  if(days<0) return label+' (passed)';
+  return label+' · '+days+'d';
+}
+
+function sortPositions(list){
+  const arr = [...list];
+  if(sortMode==='catalyst') arr.sort((a,b)=> daysUntil(a.catdate) - daysUntil(b.catdate));
+  else if(sortMode==='upside') arr.sort((a,b)=>{
+    const ua = a.mid && a.price ? (a.mid-a.price)/a.price : -999;
+    const ub = b.mid && b.price ? (b.mid-b.price)/b.price : -999;
+    return ub-ua;
+  });
+  else if(sortMode==='updated') arr.sort((a,b)=> (b.updated||'').localeCompare(a.updated||''));
+  else if(sortMode==='ticker') arr.sort((a,b)=> (a.ticker||'').localeCompare(b.ticker||''));
+  return arr;
+}
+
+function render(){
+  document.getElementById('statCount').textContent = positions.length;
+  document.getElementById('statActive').textContent = positions.filter(p=>p.status==='active').length;
+  const withCat = positions.filter(p=>p.catdate && daysUntil(p.catdate)>=0);
+  withCat.sort((a,b)=>daysUntil(a.catdate)-daysUntil(b.catdate));
+  document.getElementById('statNext').textContent = withCat.length ? withCat[0].ticker : '—';
+
+  if(positions.length===0){
+    rowsEl.innerHTML = '<div class="empty">No positions yet. Add your first biotech thesis to start the ledger.</div>';
+    return;
+  }
+
+  const sorted = sortPositions(positions);
+  rowsEl.innerHTML = sorted.map(p=>{
+    const bear = parseFloat(p.bear), bull = parseFloat(p.bull), mid = parseFloat(p.mid), price = parseFloat(p.price);
+    const lo = Math.min(bear||0, price||0, mid||0);
+    const hi = Math.max(bull||0, price||0, mid||0, 0.01);
+    const pct = v => Math.max(0,Math.min(100, ((v-lo)/(hi-lo))*100 ));
+    const upside = (mid && price) ? ((mid-price)/price*100) : null;
+    const statusLabel = {researching:'Researching', active:'Active Thesis', monitoring:'Monitoring', exited:'Exited'}[p.status] || p.status;
+    return `
+    <div class="row" data-id="${p.id}">
+      <div class="row-top">
+        <div class="row-id">
+          <span class="ticker">${p.ticker||'—'}</span>
+          <span class="company">${p.company||''}</span>
+        </div>
+        <span class="status-chip ${p.status}">${statusLabel}</span>
+      </div>
+      <div class="row-mid">
+        <div class="rangebar">
+          <div class="track"></div>
+          <div class="fill" style="left:0%; width:100%;"></div>
+          ${bear?`<div class="mark" style="left:${pct(bear)}%;" title="Bear ${fmtMoney(bear)}"></div>`:''}
+          ${mid?`<div class="mark mid" style="left:${pct(mid)}%;" title="Base ${fmtMoney(mid)}"></div>`:''}
+          ${bull?`<div class="mark" style="left:${pct(bull)}%;" title="Bull ${fmtMoney(bull)}"></div>`:''}
+          ${price?`<div class="now" style="left:calc(${pct(price)}% - 5px);" title="Current ${fmtMoney(price)}"></div>`:''}
+        </div>
+        <div class="pricecol">
+          <div class="now-price">${fmtMoney(price)}</div>
+          ${upside!==null ? `<div class="updown ${upside>=0?'pos':'neg'}">${upside>=0?'+':''}${upside.toFixed(0)}% to base</div>` : ''}
+        </div>
+      </div>
+      <div class="rangelabels">
+        <span>Bear ${fmtMoney(bear)}</span>
+        <span>Base ${fmtMoney(mid)}</span>
+        <span>Bull ${fmtMoney(bull)}</span>
+      </div>
+      <div class="row-detail">
+        <div class="detail-grid">
+          <div>
+            <div class="detail-label">Thesis</div>
+            <div class="detail-val">${p.thesis || '—'}</div>
+          </div>
+          <div>
+            <div class="detail-label">Next catalyst</div>
+            <div class="detail-val">${p.catalyst||'—'} ${p.catdate?'('+fmtCatalystDate(p.catdate)+')':''}</div>
+          </div>
+        </div>
+        <div class="detail-label">Open questions</div>
+        <div class="detail-val">${p.questions || '—'}</div>
+        <div class="row-actions">
+          <button class="edit" onclick="event.stopPropagation(); openEdit('${p.id}')">Edit</button>
+          <button class="danger" onclick="event.stopPropagation(); deletePosition('${p.id}')">Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.querySelectorAll('.row').forEach(r=>{
+    r.addEventListener('click', ()=> r.classList.toggle('expanded'));
+  });
+}
+
+document.querySelectorAll('.sortbar button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.sortbar button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    sortMode = btn.dataset.sort;
+    render();
+  });
+});
+
+function openModal(){ document.getElementById('modalBg').classList.add('show'); }
+function closeModal(){
+  document.getElementById('modalBg').classList.remove('show');
+  editingId = null;
+  ['f_ticker','f_company','f_thesis','f_price','f_bear','f_bull','f_mid','f_catalyst','f_catdate','f_questions'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f_status').value='active';
+}
+
+document.getElementById('addBtn').addEventListener('click', ()=>{
+  document.getElementById('modalTitle').textContent='Add Position';
+  openModal();
+});
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+
+window.openEdit = function(id){
+  const p = positions.find(x=>x.id===id);
+  if(!p) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent='Edit Position';
+  document.getElementById('f_ticker').value = p.ticker||'';
+  document.getElementById('f_company').value = p.company||'';
+  document.getElementById('f_thesis').value = p.thesis||'';
+  document.getElementById('f_price').value = p.price||'';
+  document.getElementById('f_bear').value = p.bear||'';
+  document.getElementById('f_bull').value = p.bull||'';
+  document.getElementById('f_mid').value = p.mid||'';
+  document.getElementById('f_catalyst').value = p.catalyst||'';
+  document.getElementById('f_catdate').value = p.catdate||'';
+  document.getElementById('f_status').value = p.status||'active';
+  document.getElementById('f_questions').value = p.questions||'';
+  openModal();
+};
+
+window.deletePosition = async function(id){
+  positions = positions.filter(p=>p.id!==id);
+  await savePositions();
+  render();
+};
+
+document.getElementById('saveBtn').addEventListener('click', async ()=>{
+  const data = {
+    id: editingId || ('p_'+Date.now()),
+    ticker: document.getElementById('f_ticker').value.trim().toUpperCase(),
+    company: document.getElementById('f_company').value.trim(),
+    thesis: document.getElementById('f_thesis').value.trim(),
+    price: parseFloat(document.getElementById('f_price').value)||null,
+    bear: parseFloat(document.getElementById('f_bear').value)||null,
+    bull: parseFloat(document.getElementById('f_bull').value)||null,
+    mid: parseFloat(document.getElementById('f_mid').value)||null,
+    catalyst: document.getElementById('f_catalyst').value.trim(),
+    catdate: document.getElementById('f_catdate').value,
+    status: document.getElementById('f_status').value,
+    questions: document.getElementById('f_questions').value.trim(),
+    updated: new Date().toISOString().slice(0,10)
+  };
+  if(!data.ticker){ alert('Ticker is required.'); return; }
+  if(editingId){
+    positions = positions.map(p=> p.id===editingId ? data : p);
+  } else {
+    positions.push(data);
+  }
+  await savePositions();
+  closeModal();
+  render();
+});
+
+document.getElementById('modalBg').addEventListener('click', (e)=>{
+  if(e.target.id==='modalBg') closeModal();
+});
+
+loadPositions();
+</script>
+</body>
+</html>
