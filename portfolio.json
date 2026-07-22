@@ -20,15 +20,15 @@
       "ticker": "CNTB",
       "company": "Connect Biopharma Holdings Limited",
       "folder": "companies/CNTB",
-      "thesis": "Rademikibart (anti-IL-4Rα mAb) repositioned for acute exacerbations of asthma/COPD, a niche with no approved biologic competitor. SEABREEZE STAT Asthma Ph2 topline due early Sept 2026 is the binary event this whole model hinges on; rNPV Low/Base/High shown as the range.",
-      "price": 2.23,
+      "thesis": "Rademikibart (anti-IL-4Rα mAb) repositioned for acute exacerbations of asthma/COPD, a niche with no approved biologic competitor. SEABREEZE STAT Asthma Ph2 topline due early Sept 2026 is the binary event this whole model hinges on; rNPV Low/Base/High shown as the range (pending recalc against a revised loss-of-exclusivity assumption). Ownership is highly concentrated (top 7 holders ~72%, led by director-controlled Panacea Venture at 21.2%); note a confirmed sell-side conflict (Cantor Fitzgerald, $4 target, was a placement agent on the March 2026 raise).",
+      "price": 2.24,
       "bear": 0.74,
       "mid": 5.07,
       "bull": 39.34,
       "catalyst": "SEABREEZE STAT Asthma Ph2 topline",
       "catdate": "2026-09-01",
       "status": "active",
-      "questions": "Pull Schedule 13D/G on Panacea Venture (total stake unknown beyond $4.0mm PIPE-anchor purchase); FY2025 10-K for patent/LOE schedule and NOL balance; Q2 2026 10-Q (due ~Aug-12) for runway check; placement-agent identity for the March 2026 raise.",
+      "questions": "Q2 2026 10-Q (due ~Aug-12) for runway trend check; recalculate valuation model against the revised loss-of-exclusivity assumption (2037/2040/2045, sourced from 10-K patent data, not yet flowed through since this environment has no Excel/LibreOffice recalc); verify RADIANT-AD China Ph3 AD data once a peer-reviewed publication or NMPA decision lands; current DEF 14A/proxy for exec comp and full board bios including new director James Schoeneck.",
       "updated": "2026-07-22"
     }
   ]

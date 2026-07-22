@@ -35,6 +35,12 @@ This is a **multi-session working file** — the user has already sent one prima
 | Current share price (as of ~1-Jul-2026 snapshot) | **$2.40** |
 | Street consensus (median of 7 analysts, Jul-2026) | **$7.00** |
 
+**⚠ Pending recalc (22-Jul-2026):** the Loss-of-exclusivity assumption was revised via `patch7.py`
+(2038/2040/2042 → 2037/2040/2045, see §4 row 11 and §8 correction #9). This environment has no
+Excel/LibreOffice to recalculate formulas, so every figure in the table above is still the *prior*
+assumption's output. Open the workbook in Excel once and refresh this table (and
+`portfolio.json`'s bear/mid/bull) from the real recalculated numbers before relying on them.
+
 ---
 
 ## 3. Company facts — sourced, as of this handoff
@@ -94,13 +100,58 @@ This is a **multi-session working file** — the user has already sent one prima
   - We do **not** have Panacea Venture's *total* stake size from the 10-Q alone (only this incremental $4.0mm purchase) — **pulling a Schedule 13D/G on Panacea Venture is the single highest-value open research item** (see §7).
 - Separately, Director **James Huang personally bought 150,000 shares in the open market on 29-May-2026 at $2.48 (~$372,000)** — a distinct, smaller, genuinely open-market signal, should not be conflated with the PIPE-anchoring role above.
 
-### Ownership (from 13D/G and 13F aggregation — NOT re-verified against the 10-Q; predates the Panacea Venture finding)
-- Institutional ownership ~59% (28 filers, ~8.3mm shares in that count, per aggregator used).
-- Named holders found: Perceptive Advisors (dedicated healthcare/biotech long-only — most thesis-relevant), Ikarian Capital, Boothbay Fund Management, BML Capital Management, Renaissance Technologies, Citadel Advisors, Jane Street Group (last three read as quant/market-making flow, not directional conviction).
-- **Panacea Venture is NOT confirmed to be captured in this aggregator list** — it may be a private/foreign holder not swept into standard 13F screens. This is exactly why the 13D/G pull matters (see §7).
-- Governance nuance found in the 10-Q: CNTB is a **foreign private issuer**. The Holding Foreign Insiders Accountable Act (HFIAA, signed into law 18-Dec-2025) newly requires CNTB's **officers and directors** (but not principal shareholders) to comply with Section 16(a) insider-reporting starting **18-Mar-2026**. Officers/directors/principal shareholders remain **exempt from Section 16(b) short-swing profit recovery**. This affects how much Form-4-style real-time insider-trading data will be available going forward and is worth knowing if screening for future insider activity.
+### Ownership — RESOLVED 22-Jul-2026, via Panacea's own Schedule 13D/A filings and the FY2024/FY2025 10-Ks' Item 12 tables (was previously 13D/G-and-13F aggregation, unverified against the 10-Q)
 
-### Analyst coverage (as of Jul-2026 — has NOT been re-verified since original research; conflicts-of-interest re: placement agent identity still unconfirmed)
+Two distinct, coexisting layers — don't conflate them:
+
+**Concentrated >5% holders** (FY2025 10-K, Item 12, as of 26-Mar-2026, based on 56,521,282 shares
+outstanding): Panacea Venture Healthcare Fund II, L.P. (James Huang, director) 12,000,000/21.2%,
+BioFortune, Inc. (Dr. Wubin Pan, former President/Chairman) 5,987,431/10.6%, Zheng Wei, Ph.D.
+(co-founder/director) 5,015,960/8.9%, Ikarian Capital, LLC 4,933,086/8.7%, Qiming Venture Partners
+entities 4,840,898/8.6%, Shanghai Minhui Enterprise Management Consulting Partnership 4,789,758/8.5%,
+Advantech Capital II Connect Partnership 4,762,185/8.4%, Lily Asia Ventures entities 3,336,907/5.9%.
+These seven holders alone control ~72% of the company. All current officers/directors as a group:
+15,944,870/26.6%.
+
+**Panacea/Huang's actual trajectory** (previously the single highest-value open item — now fully
+resolved): ~13,760,000 shares (24.9%) as of Mar-2025 (FY2024 10-K) → **12,000,000 shares (21.2%)**
+per a Schedule 13D/A filed **26-Nov-2025** (Amendment No. 4 — a real ~1.76mm-share reduction
+sometime in 2025, not disclosed anywhere in this file until now) → **13,160,000 shares (21.2%)**
+per the Schedule 13D/A filed **1-Apr-2026** (Amendment No. 5), which discloses the exact March 2026
+purchase: 1,160,000 shares at **$3.45/share** (not the $3.25/share outside investors paid — the 8-K
+itself specifies the $3.25 price applies only to purchasers not affiliated with an officer/director/
+employee/consultant; Panacea/Huang paid a premium, consistent with Nasdaq related-party pricing
+rules, not a discount). James Huang personally agreed to a 45-day post-closing lock-up (Item 4 of
+the 13D/A). Net picture: Panacea trimmed meaningfully in 2025, then used the 2026 raise to rebuild
+to roughly its *prior* percentage — a materially different, more nuanced story than "the largest
+investor keeps buying," which is what a plain read of the Q1 2026 10-Q's PIPE disclosure alone
+would suggest.
+
+**Board change**: James A. Schoeneck is now a director (0 shares as of Mar-2026), replacing the
+Qiming-designated Kan Chen, Ph.D. (rotated off sometime between the FY2024 and FY2025 10-Ks).
+
+**Insider alignment, newly visible**: CEO Barry Quart's beneficial ownership grew from 131,887
+shares (Mar-2025) to 1,700,473 shares/2.9% (Mar-2026); President David Szekeres's grew from 160,867
+to 1,234,840 shares/2.1% — both driven by their 2024 hire-date option grants vesting. Real, growing
+skin in the game from the two executives running day-to-day execution into the September data,
+not previously reflected in this file.
+
+Separately, a broader 13F aggregation (not re-verified this pass) shows ~59% institutional
+ownership across 28 filers holding smaller, sub-5% stakes each: Perceptive Advisors (dedicated
+healthcare/biotech long-only — most thesis-relevant), Boothbay Fund Management, BML Capital
+Management, Renaissance Technologies, Citadel Advisors, Jane Street Group (last three read as
+quant/market-making flow, not directional conviction). Ikarian Capital appears in *both* views,
+since its stake is large enough to cross the 5% Schedule 13G threshold (confirmed via a 13G filed
+17-Feb-2026) — this cross-validates rather than contradicts the earlier 13F-based note.
+
+Governance nuance, still relevant: CNTB is a **foreign private issuer** per the 10-Q, but has been
+a **voluntary SEC domestic filer** (10-K/10-Q/8-K instead of 20-F/6-K) starting with the FY2024
+10-K, part of the 2024 U.S.-centric transition. The Holding Foreign Insiders Accountable Act
+(HFIAA, signed 18-Dec-2025) newly requires CNTB's officers and directors (not principal
+shareholders) to comply with Section 16(a) insider-reporting starting 18-Mar-2026; all remain
+exempt from Section 16(b) short-swing profit recovery.
+
+### Analyst coverage (as of Jul-2026 — ratings/targets not re-verified since original research; conflict of interest now CONFIRMED, not unconfirmed)
 | Firm | Target | Rating | Date |
 |---|---|---|---|
 | H.C. Wainwright | $7 | Buy | — |
@@ -110,7 +161,7 @@ This is a **multi-session working file** — the user has already sent one prima
 | Piper Sandler | $7 | Overweight | — |
 | Oppenheimer | $8 | Outperform | initiated 9-Jul-2026 |
 
-Median ~$7.00, aggregate "Strong Buy." Nearly all coverage initiated in the ~10 weeks before the September 2026 data — classic pre-catalyst sell-side positioning; none of these firms has a track record through an actual CNTB data readout. We could **not** confirm from public sources whether any of these firms acted as placement agent on the March 2026 private placement (the ~$1.6mm placement-agent-fee line in the 10-Q confirms a placement agent existed, but not who) — open item, see §7.
+Median ~$7.00, aggregate "Strong Buy." Nearly all coverage initiated in the ~10 weeks before the September 2026 data — classic pre-catalyst sell-side positioning; none of these firms has a track record through an actual CNTB data readout. **Placement-agent identity is now confirmed**: the 8-K announcing the March 2026 private placement (filed 30-Mar-2026) names **Leerink Partners LLC and Cantor Fitzgerald & Co.** as joint placement agents. Cantor Fitzgerald is one of the six covering analysts above with a live $4 Overweight rating — a direct, confirmed conflict of interest between arranging a related-party-anchored raise and publishing ongoing sell-side coverage on the same stock. This doesn't necessarily make the rating wrong, but it should be weighted accordingly.
 
 ### Relative valuation peers used
 - **Upstream Bio (UPB)** — INCLUDED, primary multiple source. Single-asset (verekitug, TSLP-receptor antagonist), Ph2/3, severe asthma + CRSwNP + COPD. EV ~$190mm (Seeking Alpha, 30-May-2026, "under $200M" following a ~47% post-Phase-2-miss selloff — VERIFY against a current cash balance). Risk-adjusted peak WW sales estimate $2.7bn by 2035 (Mizuho, 17-Dec-2025). Implied EV/risk-adj-peak-sales multiple ≈ **0.070x**.
@@ -135,7 +186,7 @@ All of these are editable input cells (blue fill) with a "Selected" column (ligh
 | 8 | US launch year — Asthma | 2032 | 2031 | 2030 | ESTIMATE from data timing |
 | 9 | US launch year — COPD | 2033 | 2032 | 2031 | ESTIMATE, ~1yr behind Asthma |
 | 10 | Years launch → peak sales | 6 | 5 | 4 | ESTIMATE |
-| 11 | Loss-of-exclusivity year | 2038 | 2040 | 2042 | ESTIMATE — actual patent schedule NOT yet sourced (10-K IP section needed) |
+| 11 | Loss-of-exclusivity year | 2037 | 2040 | 2045 | SOURCED 22-Jul-2026 via `build/patch7.py` (was an unverified placeholder). Per FY2024/FY2025 10-Ks, Item 1 IP: composition-of-matter patent family expires 2037 (unextended, controls Low); formulation family expires 2040 (unextended, unchanged Base); Hatch-Waxman PTE could add up to 5yr capped at 14yr-from-approval (High). **NOT YET RECALCULATED** — this environment has no Excel/LibreOffice; open the workbook once to refresh cached rNPV/DCF values before trusting any downstream number in §2's headline table. |
 | 12 | COGS, % of net sales | 18% | 15% | 12% | ESTIMATE, typical mAb manufacturing cost |
 | 13 | Peak SG&A, % of net sales | 35% | 28% | 22% | ESTIMATE, niche high-touch ED/hospital commercial model |
 | 14 | Discount rate / WACC | 14% | 12.5% | 11% | ESTIMATE, standard clinical-biotech range |
@@ -171,7 +222,8 @@ Both deliverables were built with **code, not manual Excel/Word editing** — th
 - `build1.py` → `build8.py` — sequential build scripts, each appending one tab or block. **Must be run in order on a fresh file** to reproduce the workbook from scratch (each script loads the previous script's saved `model.xlsx`, appends, and re-saves). Order: build1 (Cover title block) → build2 (assumptions table) → build3 (Balance Sheet tab) → **patch1.py** (fixes cross-sheet cell references from Cover to Balance Sheet, needed because exact row numbers aren't known until build3 runs) → build4 (rNPV Asthma block) → build5 (rNPV COPD block + summary) → **patch2.py** (recalibrates net-price/penetration/COPD-PoS assumptions to be more conservative — this correction happened before the 10-Q upload) → build6 (DCF tab) → build7 (Relative Valuation tab) → build8 (Price Target Summary tab).
 - `row_map.json` — persisted dictionary of every important row number (see §5), read/written by every build/patch script via `json.load`/`json.dump`. **Always load this before writing new patches** — it's the source of truth for "what row is X on."
 - `patch3.py` through `patch6.py` — the corrections applied after the user uploaded the actual Q1 2026 10-Q (`cntb-20260331.html`): patch3 = cash/share-count corrections; patch4 = precision updates + Panacea Venture/James Huang reframing on the Balance Sheet tab; patch5 = Simcere deal economics detail + China-milestone-assumption revision; patch6 = refreshed the Price Target Summary sensitivity table with recomputed deltas after the share-count correction changed the base case.
-- **Recalculation**: use `/mnt/skills/public/xlsx/scripts/recalc.py <file> <timeout>` after every edit — this is a LibreOffice-headless recalc-and-error-check, not optional. Target: `{"status": "success", "total_errors": 0}`.
+- `patch7.py` (22-Jul-2026) — revised the Loss-of-exclusivity assumption (row 52) from an unverified placeholder (2038/2040/2042) to real patent-expiry data from the FY2024/FY2025 10-Ks (2037/2040/2045). **Not yet recalculated** — this environment (Claude Code on Windows, no Office/LibreOffice installed) can write input cells via openpyxl but cannot recalculate formulas, so the workbook's cached rNPV/DCF outputs are stale until it's opened in Excel at least once. Don't read Low/Base/High figures out of the cached values until that happens.
+- **Recalculation**: the original toolchain used `/mnt/skills/public/xlsx/scripts/recalc.py <file> <timeout>` (a Claude.ai-sandbox-specific LibreOffice-headless recalc-and-error-check) — that path doesn't exist in a plain Claude Code/Windows environment. If no equivalent is available, recalculating means opening the file in Excel (or installing LibreOffice) at least once after any input-cell edit; don't skip this and don't hand-compute a substitute number.
 - **Extending further**: to change an assumption going forward, just open `model.xlsx` with openpyxl, write to the relevant Low/Base/High cell in `Cover & Assumptions` (rows 42–57), save, and recalc — all downstream tabs update automatically via formula, no need to touch rNPV/DCF/RelVal/Price-Target tabs directly. To add a wholly new line item (e.g., a real patent-expiry-driven LOE schedule once the 10-K is read), follow the existing pattern: add a new assumption row with Low/Base/High/Selected/Source-note columns, then reference `'Cover & Assumptions'!$F$<row>` from wherever it's needed.
 - **Known fragile spot**: in the rNPV Model tab, columns C through V (20 columns) are all *year-data* columns — do NOT write source/note text into any column in that range assuming it's a "notes" column the way other tabs use column G. Notes in that tab go in column X instead (this bit us once during the build — see the `#VALUE!` errors caused by overwriting a formula cell with note text, fixed by moving notes to column X).
 
@@ -186,13 +238,31 @@ Both deliverables were built with **code, not manual Excel/Word editing** — th
 
 ## 7. Open items — ranked by value, for the next research pass
 
-1. **Schedule 13D/G on Panacea Venture** — highest-value single item. Resolves Panacea Venture's total stake (beyond the $4.0mm incremental PIPE purchase), which is likely the single most important ownership fact in the file and currently absent from the institutional-ownership summary.
-2. **FY2025 Form 10-K** — IP/patents section (resolves the loss-of-exclusivity assumption, currently a pure 2038/2040/2042 estimate) and the NOL carryforward footnote (resolves the tax-shield-timing assumption, currently a 0%-until-2033/34 placeholder).
-3. **Q2 2026 10-Q** (due ~12-Aug-2026) — tests whether the tighter mechanical-burn-extrapolation runway estimate or management's more conservative-than-thought "≥12 months from 12-May-2026 filing" (~May-2027) framing is closer to right.
-4. **Full AJRCCM paper** (not just the press-release characterization) for the prior chronic-asthma Ph2 — actual effect sizes/CIs would sharpen how much read-through to give the SEABREEZE endpoint.
-5. **Private placement Form D / placement-agent identity** — resolves the sell-side conflict-of-interest question (an ~$1.6mm placement-agent-fee line is confirmed in the 10-Q, but not who received it).
-6. **Current DEF 14A / proxy** — board composition, founder's remaining board influence, exec comp.
-7. **SEABREEZE STAT topline data itself** (expected early Sept 2026 for Asthma) — the big one; when it lands, the entire PoS-driven structure of this model should be revisited, not just patched (a positive readout should probably collapse the Low/Base/High PoS-for-Ph2 assumption to ~100% and shift focus entirely to pricing/penetration/Ph3-execution risk).
+**Resolved 22-Jul-2026** (kept here for the audit trail, not because they're still open): the
+Panacea Venture 13D/G pull, the FY2025 10-K's IP/patents and NOL sections, and the private
+placement's placement-agent identity — see §3 and §8 for what was found and where.
+
+1. **Recalculate the valuation model** against the revised loss-of-exclusivity assumption
+   (patch7.py, 2037/2040/2045) — this environment has no Excel/LibreOffice, so the model's cached
+   rNPV/DCF outputs (and this doc's §2 headline table) still reflect the *prior* assumption. Open
+   the workbook in Excel once, then update §2 and `portfolio.json`'s bear/mid/bull from the real
+   recalculated numbers — don't hand-type a guess.
+2. **Q2 2026 10-Q** (due ~12-Aug-2026) — tests whether the tighter mechanical-burn-extrapolation
+   runway estimate or management's more conservative-than-thought "≥12 months from 12-May-2026
+   filing" (~May-2027) framing is closer to right.
+3. **Full AJRCCM paper** (not just the press-release characterization) for the prior
+   chronic-asthma Ph2 — actual effect sizes/CIs would sharpen how much read-through to give the
+   SEABREEZE endpoint. (Note: this is separate from RADIANT-AD and the Phase 1 IV study, both of
+   which now have real disclosed numbers — see §3.)
+4. **RADIANT-AD verification** — current 52-week China Ph3 AD data (EASI-75/IGA-0/1/EASI-90) is a
+   company 8-K exhibit presented at the March 2026 AAD meeting, not yet a peer-reviewed publication
+   or NMPA-level data package. Revisit once either lands.
+5. **Current DEF 14A / proxy** — exec comp detail specifically (board composition itself is now
+   resolved via the FY2024/FY2025 10-Ks, see §3).
+6. **SEABREEZE STAT topline data itself** (expected early Sept 2026 for Asthma) — the big one; when
+   it lands, the entire PoS-driven structure of this model should be revisited, not just patched (a
+   positive readout should probably collapse the Low/Base/High PoS-for-Ph2 assumption to ~100% and
+   shift focus entirely to pricing/penetration/Ph3-execution risk).
 
 ---
 
@@ -207,6 +277,20 @@ Both deliverables were built with **code, not manual Excel/Word editing** — th
 | 5 | Company incorporation date ambiguous (2012 vs. 2015 across secondary sources) | Confirmed November 2015, Cayman Islands | Actual 10-Q |
 | 6 | Going-concern runway framed only as management's "into 2H 2027" PR language | Added the more conservative formal 10-Q commitment: "at least one year from the 12-May-2026 filing date" (~May-2027 floor) | Actual 10-Q, Note 2 Liquidity and Going Concern |
 | 7 | Options/RSU overhang treated as an unknown ~3.5mm placeholder | Resolved to the exact 15,167,637 options (WA strike $2.08) + 600,000 ESPP rights | Actual 10-Q |
+| 8 | Panacea Venture's March 2026 $4.0mm purchase framed as "largest current investor" with total stake unknown | Reframed with full trajectory: ~13.76mm sh (24.9%) Mar-2025 → 12.0mm sh (21.2%) per 13D/A filed 26-Nov-2025 (a real ~1.76mm-share reduction, not previously known) → 13.16mm sh (21.2%) per 13D/A filed 1-Apr-2026, buying 1,160,000 sh at $3.45/share (a premium to the $3.25 outside price, not a discount) | Panacea's own Schedule 13D/A filings (SEC EDGAR, accessions 0001193125-25-300640 and 0001193125-26-138013) |
+| 9 | Loss-of-exclusivity Low/Base/High (2038/2040/2042) was an explicitly-flagged unverified placeholder | Sourced from actual patent data: composition-of-matter family expires 2037 (unextended), formulation family expires 2040 (unextended), Hatch-Waxman PTE up to 5yr capped at 14yr-from-approval. Revised to 2037/2040/2045 via patch7.py — **not yet recalculated through the model** | FY2024 10-K and FY2025 10-K, Item 1 Intellectual Property (both filings, consistent figures) |
+| 10 | NOL carryforwards noted as "not disclosed in the 10-Q" | Fully disclosed in the 10-K: China NOLs $193.3mm (begin expiring 2026), Hong Kong $225.8mm (indefinite), Australia $5.0mm (indefinite), US federal R&D credits $5.4mm (begin expiring 2042). Full valuation allowance zeroes net DTA regardless — confirms the existing 0%-near-term-tax assumption was already right | FY2025 10-K, Note 11 Income Taxes |
+| 11 | Sell-side placement-agent conflict of interest: "could not confirm from public sources" | Confirmed: Leerink Partners LLC and Cantor Fitzgerald & Co. were joint placement agents on the March 2026 raise. Cantor Fitzgerald carries a live $4 Overweight rating on CNTB — a direct, confirmed conflict | 8-K filed 30-Mar-2026, Item 1.01 |
+| 12 | "~90% near-maximal responses" China AD characterization flagged as an unverified press-release claim | Traced to a real, previously-unnamed 259-patient Phase 3 trial, RADIANT-AD: 52-week data shows EASI-75 96.6%, IGA 0/1 87.1%, EASI-90 85.3% — the "~90%" characterization is a fair average of real figures, not marketing inflation, though still a company topline, not peer-reviewed | 8-K exhibit 99.2, filed 30-Mar-2026 (RADIANT-AD topline press release) |
+| 13 | Phase 1 IV study effect size known only as a vague "rapid and significant improvement" characterization | Quantified: mean FEV1 improvement ~200-400 mL maintained through Day 29 in asthma and COPD patients (100-400 mL increases as early as 15 min post-dose); small study (12 asthma/10 COPD, 4:1 randomized) - supportive mechanistic signal, not powered for efficacy | 8-K exhibit 99.1, filed 30-Mar-2026 (CBP-201-105 topline press release) |
+| 14 | Board composition: "did not find a detailed current board composition" | Resolved via both 10-Ks: Kleanthis Xanthopoulos (Chair), James Huang, Zheng Wei, Wubin Pan, Barry Quart remain; Kan Chen (Qiming designee) rotated off, replaced by new director James A. Schoeneck | FY2024 10-K and FY2025 10-K, Item 12 |
+| 15 | CEO/President personal share ownership treated as static (131,887 / 160,867 shares) | Both grew sharply as 2024 hire-date options vested: Quart to 1,700,473 sh (2.9%), Szekeres to 1,234,840 sh (2.1%), as of Mar-2026 | FY2025 10-K, Item 12 |
+
+All corrections through #7 were reconciled against the workbook and memo and re-verified error-free
+at the time. Corrections #8–15 (22-Jul-2026) update `portfolio.json`, `README.md`, and the memo
+build scripts (`memo_partA.js`/`memo_partB.js`, rebuilt via `node memo_partB.js`); #9 (loss of
+exclusivity) additionally touches the workbook via `patch7.py` but has **not** been recalculated
+through to the rNPV/DCF outputs — see §7, item 1.
 
 All six downstream valuation outputs (rNPV, DCF, Relative Valuation, Price Target blend) were recomputed and the workbook re-verified error-free after each correction; the memo was re-grepped and rebuilt to match.
 

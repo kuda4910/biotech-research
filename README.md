@@ -203,6 +203,14 @@ was the bull case) — Upstream Bio's post-Ph2-miss selloff depressed its EV/pea
 the model's own rNPV Low/Base/High as bear/mid/bull (the most internally-consistent single-method
 range), not a cross-method mix.
 
+**Recalc pending (as of 22-Jul-2026)**: the Loss-of-exclusivity assumption (row 52) was revised via
+`build/patch7.py` from an unverified placeholder (2038/2040/2042) to real patent-expiry data
+(2037/2040/2045 — see Known corrections below). This environment has no Excel/LibreOffice to
+recalculate the workbook, so the table above and `portfolio.json`'s bear/mid/bull still reflect the
+*prior* assumption. Open the workbook in Excel once to refresh all cached formula values, then
+update the table above and `portfolio.json` from the real recalculated output — don't hand-type a
+guess at the new numbers.
+
 **Built entirely via code** (unlike SPRB): `companies/CNTB/build/` has the openpyxl scripts
 (`build1.py`...`build8.py`, `patch1.py`...`patch6.py`, `helpers.py`, `row_map.json`) and the
 docx scripts (`memo_partA.js`, `memo_partB.js`) that generate the two deliverable files. To change
@@ -218,38 +226,104 @@ columns C–V are year-data columns; put notes in column X, not into any C–V c
 - Total liquidity: was modeled as $46.0mm on a guessed cash/ST-investment split → corrected to
   **$52.03mm** ($46.034mm cash + $5.997mm short-term investments) — press summaries quoting
   "$46.0mm" as the total are wrong, that's only the cash line.
-- **March 2026 private placement ($20.2mm gross, $3.25/share) was led by Panacea Venture**,
-  described in the 10-Q as CNTB's largest current investor. Board member James Huang is the sole
-  owner of Panacea Innovation Limited, which owns Panacea Venture — so this is a **related-party
-  transaction** (Panacea bought $4.0mm of the round), not generic PIPE participation. Don't
-  conflate with Huang's separate, smaller open-market purchase (150,000 shares, $2.48, 29-May-2026).
 - China milestone realization probability revised **down** (20/35/50% → 15/30/45%) after
   confirming a real, already-materialized precedent: Simcere missed a milestone deadline and
   **~$8mm lapsed in 2025**. Remaining eligible China milestones: ~$110mm of the original $123mm.
 - Company incorporation date confirmed **November 2015** (secondary sources were ambiguous
   2012 vs. 2015).
+- **Panacea Venture's total ownership — reframed, not just filled in (22-Jul-2026).** The prior
+  version of this file described the March 2026 private placement as led by "CNTB's largest
+  current investor" purchasing $4.0mm, with the total stake unknown. Pulled Panacea's own Schedule
+  13D/A filings directly (Nov-2025 and Apr-2026) — see the Ownership section below for the full,
+  more nuanced trajectory (they trimmed ~1.76mm shares in 2025 before the 2026 raise, they didn't
+  just accumulate). Also newly confirmed: Panacea paid **$3.45/share** in the raise, a premium to
+  the $3.25/share outside investors paid — not a discounted insider deal.
+- **Loss-of-exclusivity assumption (row 52) — was a flagged placeholder, now sourced.** Both the
+  FY2024 and FY2025 10-Ks (Item 1, Intellectual Property) disclose: composition-of-matter patent
+  family expires 2037 (unextended), formulation family expires 2040 (unextended), Hatch-Waxman PTE
+  could add up to 5yr capped at 14yr-from-approval. Revised Low/Base/High from 2038/2040/2042 to
+  **2037/2040/2045** via `build/patch7.py` — see "Recalc pending" note above, this hasn't flowed
+  through to the rNPV/DCF outputs yet.
+- **NOL carryforwards — fully disclosed**, previously "not disclosed in the 10-Q": China $193.3mm
+  (begins expiring 2026), Hong Kong $225.8mm (indefinite), Australia $5.0mm (indefinite), US federal
+  R&D credits $5.4mm (begin expiring 2042). Full valuation allowance zeroes net deferred tax assets
+  either way, confirming the existing 0%-near-term-cash-tax modeling assumption was already right.
+- **Sell-side conflict of interest — confirmed, was previously "could not confirm."** The March
+  2026 private-placement 8-K names **Leerink Partners LLC and Cantor Fitzgerald & Co.** as joint
+  placement agents. Cantor Fitzgerald carries a live $4 Overweight rating on CNTB — a direct
+  conflict between arranging a related-party-anchored raise and publishing coverage on the same
+  stock.
+- **The "~90% near-maximal responses" AD claim — verified, not debunked.** Traced it to an actual
+  259-patient Phase 3 China trial, **RADIANT-AD** (previously unnamed in this file), with real
+  52-week numbers (EASI-75 96.6%, IGA 0/1 87.1%, EASI-90 85.3%). The "~90%" characterization is a
+  fair average of real disclosed figures, not marketing inflation — see Analyst/Data section below.
+
+### Ownership — resolved (22-Jul-2026)
+
+Two distinct layers, previously conflated:
+
+**Concentrated >5% holders** (FY2025 10-K, Item 12, as of 26-Mar-2026): Panacea Venture (James
+Huang, director) **21.2%**, BioFortune Inc. (Dr. Wubin Pan, former President/Chairman) **10.6%**,
+Zheng Wei, Ph.D. (co-founder/director) **8.9%**, Ikarian Capital, LLC **8.7%**, Qiming Venture
+Partners entities **8.6%**, Shanghai Minhui Enterprise Management Consulting Partnership **8.5%**,
+Advantech Capital II Connect Partnership **8.4%**, Lily Asia Ventures entities **5.9%**. These seven
+holders alone control **~72%** of the company — free float is genuinely thin.
+
+**Panacea/Huang's actual trajectory** (from Panacea's own 13D/A filings, not just the Q1 2026
+10-Q's PIPE disclosure): ~13.76mm shares (24.9%) as of Mar-2025 → **12.0mm shares (21.2%)** per a
+13D/A filed 26-Nov-2025 (a real ~1.76mm-share reduction sometime in 2025) → **13.16mm shares
+(21.2%)** per the 13D/A filed 1-Apr-2026, after buying 1,160,000 shares at $3.45/share in the March
+2026 raise. Net effect: trimmed meaningfully in 2025, then used the 2026 raise to rebuild to
+roughly the *same* prior percentage — a materially different story than "the largest investor
+keeps buying." James Huang personally agreed to a 45-day lock-up on his own shares from the raise's
+closing date.
+
+Separately: a broader 13F aggregation (Perceptive Advisors, Boothbay, BML Capital, Renaissance,
+Citadel, Jane Street) shows ~59% institutional ownership at smaller, sub-5% stakes each — a
+different, coexisting layer, not a contradiction of the table above (Ikarian appears in both,
+since its stake is large enough to cross the 5% threshold).
+
+**Board change**: James A. Schoeneck is now a director (0 shares as of Mar-2026), replacing the
+Qiming-designated Kan Chen, Ph.D. **Insider alignment**: CEO Barry Quart's and President David
+Szekeres's personal holdings grew sharply as 2024 hire-grant options vested (Quart 131,887→
+1,700,473 shares/2.9%; Szekeres 160,867→1,234,840 shares/2.1%) — real skin in the game not
+previously reflected here.
 
 ### Open questions flagged for the user's own research (highest-value first)
 
-1. **Schedule 13D/G on Panacea Venture** — resolves its *total* stake beyond the $4.0mm PIPE
-   purchase; likely the single most important ownership fact currently missing.
-2. FY2025 10-K — patent/IP section (resolves the 2038/2040/2042 loss-of-exclusivity estimate,
-   currently a guess) and the NOL carryforward footnote.
-3. Q2 2026 10-Q, due ~12-Aug-2026 — tests the mechanical burn-extrapolation runway estimate
+1. Q2 2026 10-Q, due ~12-Aug-2026 — tests the mechanical burn-extrapolation runway estimate
    against management's "≥12 months from the 12-May-2026 filing" framing (~May-2027 floor).
-4. Full AJRCCM paper for the prior chronic-asthma Ph2 (only have the press-release
-   characterization of effect sizes so far).
-5. Private placement Form D / placement-agent identity — the ~$1.6mm placement-agent fee is
-   confirmed in the 10-Q, but not who received it (sell-side conflict-of-interest question).
-6. Current DEF 14A/proxy — board composition, founder's remaining influence, exec comp.
+2. Recalculate the valuation model against the revised loss-of-exclusivity assumption (see "Recalc
+   pending" note above) — needs an actual Excel/LibreOffice open, not a hand-typed guess.
+3. Full AJRCCM paper for the prior chronic-asthma Ph2 (still only have the press-release
+   characterization — separate from RADIANT-AD and the Phase 1 IV data, both now resolved with
+   real numbers, see below).
+4. RADIANT-AD (China Ph3 AD, n=259) — verify against a peer-reviewed publication or NMPA decision
+   once either lands; current data is a company 8-K exhibit, not independently adjudicated.
+5. Current DEF 14A/proxy — exec comp detail (board composition is now resolved via the 10-Ks
+   above, but the proxy would have compensation tables this file doesn't have).
+
+### New clinical data disclosed since handoff (22-Jul-2026)
+
+- **RADIANT-AD** (China Ph3 AD, Simcere partner trial, n=259, double-blind placebo-controlled):
+  52-week topline presented at the March 2026 AAD meeting — EASI-75 96.6%, IGA 0/1 87.1%, EASI-90
+  85.3%, safety comparable to placebo. CEO Quart's remarks alongside this release explicitly
+  floated **ex-China AD as a future indication "for us or a future partner"** — new, currently
+  unmodeled optionality, not in the workbook or blended target anywhere.
+- **Phase 1 IV pharmacology study (CBP-201-105)** — real numbers now available: mean FEV1
+  improvement ~200-400 mL maintained through Day 29 in both asthma and COPD patients, with
+  meaningful increases (100-400 mL) as early as 15 minutes post-dosing. Small study (12 asthma/10
+  COPD patients total, 4:1 randomized) — genuinely supportive mechanistic signal, not powered for
+  efficacy; don't over-weight it relative to the SEABREEZE STAT readouts.
 
 ### Analyst coverage (as of Jul-2026, not re-verified since original research)
 
 H.C. Wainwright $7 Buy, BTIG $10 Buy, Cantor Fitzgerald $4 Overweight, Canaccord Genuity $6 Buy,
 Piper Sandler $7 Overweight, Oppenheimer $8 Outperform (initiated 9-Jul-2026). Median ~$7, all but
 one initiated in the ~10 weeks before the September data — pre-catalyst positioning, no firm here
-has a track record through an actual CNTB readout. Placement-agent identity for the March 2026
-raise is unconfirmed against this list (see open questions above).
+has a track record through an actual CNTB readout. **Placement-agent conflict now confirmed**:
+Cantor Fitzgerald was a joint placement agent (with Leerink Partners) on the March 2026 raise while
+carrying a live rating on the stock — see Known corrections above.
 
 ## Workflow tooling
 
