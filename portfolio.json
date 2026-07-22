@@ -6,7 +6,7 @@
       "company": "Spruce Biosciences, Inc.",
       "folder": "companies/SPRB",
       "thesis": "Sole ERT for MPS IIIB (Sanfilippo B), BLA filing guided Q4-26. Bottom-up rNPV/DCF below current price; upside case depends on peer-multiple re-rating or BioMarin buyout.",
-      "price": 43.54,
+      "price": 44.5,
       "bear": 19,
       "mid": 51,
       "bull": 165,
@@ -14,14 +14,14 @@
       "catdate": "2026-10-01",
       "status": "active",
       "questions": "Confirm diagnosed patient count via KOL; confirm exact BioMarin royalty rate; watch confirmatory-trial power given modest effect size.",
-      "updated": "2026-07-18"
+      "updated": "2026-07-22"
     },
     {
       "ticker": "CNTB",
       "company": "Connect Biopharma Holdings Limited",
       "folder": "companies/CNTB",
       "thesis": "Rademikibart (anti-IL-4Rα mAb) repositioned for acute exacerbations of asthma/COPD, a niche with no approved biologic competitor. SEABREEZE STAT Asthma Ph2 topline due early Sept 2026 is the binary event this whole model hinges on; rNPV Low/Base/High shown as the range.",
-      "price": 2.40,
+      "price": 2.23,
       "bear": 0.74,
       "mid": 5.07,
       "bull": 39.34,

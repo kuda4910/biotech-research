@@ -21,7 +21,11 @@ biotech-research/
 │   ├── portfolio_monitor.html         <- primary dashboard: fetches portfolio.json from GitHub's raw URL
 │   └── portfolio_ledger.html          <- earlier version, browser-local-storage only, no GitHub fetch (keep as fallback reference)
 ├── templates/
-│   └── Biotech_DD_Prompt_Template.md  <- reusable prompt for kicking off a new company's full analysis
+│   ├── Biotech_DD_Prompt_Template.md   <- reusable prompt for kicking off a new company's full analysis
+│   └── News_Update_Prompt_Template.md  <- reusable prompt for reconciling news/filings against an existing thesis
+├── scripts/
+│   └── refresh_prices.py              <- pulls live quotes into portfolio.json's price fields only (see below)
+├── .claude/skills/thesis-update/       <- project skill wrapping News_Update_Prompt_Template.md for Claude Code
 └── companies/
     ├── SPRB/
     │   ├── SPRB_Valuation_Model.xlsx  <- rNPV / DCF / relative valuation / balance sheet model
@@ -247,12 +251,45 @@ one initiated in the ~10 weeks before the September data — pre-catalyst positi
 has a track record through an actual CNTB readout. Placement-agent identity for the March 2026
 raise is unconfirmed against this list (see open questions above).
 
-## The reusable template (templates/Biotech_DD_Prompt_Template.md)
+## Workflow tooling
 
-Use this to kick off a new company folder from scratch — paste it into a new chat (or adapt it for
-a Claude Code session) with the ticker filled in. It specifies the same model structure, memo
-structure, sell-side reconciliation, and — importantly — a standing instruction to flag every
-assumption's source, verify its own math, and self-correct visibly rather than bury mistakes.
+### Starting a new company (templates/Biotech_DD_Prompt_Template.md)
+
+Paste it into a new chat (or adapt it for a Claude Code session) with the ticker filled in. It
+specifies the same model structure, memo structure, sell-side reconciliation, and — importantly —
+a standing instruction to flag every assumption's source, verify its own math, and self-correct
+visibly rather than bury mistakes.
+
+### Updating an existing thesis (templates/News_Update_Prompt_Template.md + the thesis-update skill)
+
+When new information comes in about SPRB, CNTB, or a future position — a filing, an article, a
+screenshot, a claim — don't just discuss it in isolation; reconcile it against the existing
+thesis. `templates/News_Update_Prompt_Template.md` is the standalone version of this process
+(portable to any chat); `.claude/skills/thesis-update/` wraps the same process as a Claude Code
+project skill so it's directly invocable in this repo without pasting the whole template each
+time. Either path: loads current state (README section + `portfolio.json` entry +
+`*_Project_Context.md` if present) → sorts new facts into confirms/corrections/new-risks/
+assumption-changes → surfaces materiality and asks before editing → on confirmation, keeps
+`portfolio.json`, the README section, the model, and the memo in sync → logs the correction
+plainly → commits straight to `main`. This is exactly the process that produced the CNTB
+corrections log (§8 in its Project Context doc), now made repeatable instead of ad hoc.
+
+### Refreshing prices (scripts/refresh_prices.py)
+
+```
+python scripts/refresh_prices.py            # updates portfolio.json's price + updated fields
+python scripts/refresh_prices.py --dry-run  # preview only, writes nothing
+```
+
+Pulls live quotes from Yahoo Finance's public chart endpoint (no API key, just a browser-like
+User-Agent header — the endpoint 429s without one). Deliberately narrow: it only ever touches
+`price` and `updated`, never thesis text, bear/mid/bull targets, catalysts, or open questions —
+those require judgment and belong in the news-update process above, not a script. It doesn't
+touch git either; review the diff and commit/push yourself. Not currently scheduled to run
+automatically — a background job silently editing tracked data with no visible reasoning trail
+would undercut the one thing this whole repo is for (every number traceable to a source);
+run it manually, or ask to wire it into this environment's scheduled-task support if you want it
+on a cadence.
 
 ## Known limitations — resolved
 
